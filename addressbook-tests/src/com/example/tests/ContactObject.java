@@ -1,6 +1,6 @@
 package com.example.tests;
 
-public class ContactData {
+public class ContactObject {
     // default values
     private String firstname = "firstname";
     private String lastname = "lastname";
@@ -16,7 +16,7 @@ public class ContactData {
     private String saddress = "second address";
     private String sphone = "second phone";
 
-    public ContactData() {
+    public ContactObject() {
     }
 
     public String getFirstname() {
@@ -122,4 +122,5 @@ public class ContactData {
     public void setSphone(String sphone) {
         this.sphone = sphone;
     }
+
 }

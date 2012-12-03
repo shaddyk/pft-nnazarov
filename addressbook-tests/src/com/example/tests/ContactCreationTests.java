@@ -1,6 +1,6 @@
 package com.example.tests;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,16 +11,12 @@ public class ContactCreationTests extends TestBase {
 
     @Test
     public void testContactCreation() throws Exception {
-        openMainPage();
-        gotoContactsPage();
-        ContactData contactData = new ContactData();
-        // Проверим, что дефолтные значения корректно переопределяются
-        contactData.setBmonth("July");
-        fillContact(contactData);
-        submitContact();
-        returnToMainPage();
-        //Тот же метод, что и для групп: ищем в исходном тексте любое упоминание фамилии
-        checkCreated(contactData.getLastname());
+        app.getNavigationHelper().openMainPage();
+        app.getNavigationHelper().gotoContactsPage();
+        ContactObject contactObject = new ContactObject();
+        app.getContactHelper().fillContact(contactObject);
+        app.getContactHelper().submitContact();
+        app.getNavigationHelper().returnToMainPage();
     }
 
 }

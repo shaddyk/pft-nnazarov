@@ -1,11 +1,11 @@
 package com.example.tests;
 
-public class GroupData {
-    private String name;
-    private String header;
-    private String footer;
+public class GroupObject {
+    private String name = "new name";
+    private String header = "new header";
+    private String footer = "new footer";
 
-    public GroupData() {
+    public GroupObject() {
     }
 
     public String getName() {
