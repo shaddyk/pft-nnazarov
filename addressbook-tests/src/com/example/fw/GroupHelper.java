@@ -32,16 +32,16 @@ public class GroupHelper extends HelperBase{
         int groupCount = driver.findElements(By.xpath("//form[2]/input[@type='checkbox']")).size();
         for(int i = 0; i < groupsIndexes.length; i++) {
             if(groupsIndexes[i] < groupCount) {
-                driver.findElement(By.xpath("//form[2]/input[@type='checkbox'][" + groupsIndexes[i] + "]")).click();
+               click(By.xpath("//form[2]/input[@type='checkbox'][" + groupsIndexes[i] + "]"));
             }
         }
     }
 
     public void deleteGroup() {
-        driver.findElement(By.name("delete")).click();
+        click(By.name("delete"));
     }
 
     public void editGroup() {
-        driver.findElement(By.name("edit")).click();
+        click(By.name("edit"));
     }
 }

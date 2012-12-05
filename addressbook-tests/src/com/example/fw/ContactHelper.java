@@ -34,4 +34,64 @@ public class ContactHelper extends HelperBase {
         type(By.name("phone2"), contactObject.getSphone());
     }
 
+    public void selectContactsById(int[] contactIndexes) {
+        int contactCount = driver.findElements(By.xpath("//input[@type='checkbox']")).size() - 1;
+        for(int i = 0; i < contactIndexes.length; i++) {
+            if(contactIndexes[i] < contactCount) {
+                click(By.xpath("//*[@id='id" + (contactIndexes[i] + 1) + "']"));
+            }
+        }
+    }
+
+    public void selectContactByLastName(String lastName) {
+        int contactCount = driver.findElements(By.xpath("//input[@type='checkbox']")).size() - 1;
+        for(int i = 0; i < contactCount; i++) {
+            if(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText().equals(lastName)) {
+                click(By.xpath("//tbody/tr[" + (i + 2) + "]/td[1]/input"));
+            }
+        }
+    }
+
+    public void actionByLastName(int action, String lastName) {
+        // action map
+        //0 - Details
+        //1 - Edit
+        //2 - Vcard
+        //3 - Gmaps
+        //4 - Home
+
+        int contactCount = driver.findElements(By.xpath("//input[@type='checkbox']")).size() - 1;
+        for(int i = 0; i < contactCount; i++) {
+            if(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText().equals(lastName)) {
+                click(By.xpath("//tbody/tr[" + (i + 2) + "]/td["+ (action + 6) +"]/a/img"));
+                break;
+            }
+        }
+    }
+
+
+    public void selectAllContacts() {
+        click(By.xpath("//tbody/tr[last()]/td[1]/input"));
+    }
+
+    public void sendEmail() {
+        click(By.xpath("//input[@value='Send e-Mail']"));
+    }
+
+    public void changeGroup(String groupName) {
+        select(By.name("to_group"),groupName);
+        click(By.xpath("//input[@name='add']"));
+    }
+
+    public void updateContact() {
+        click(By.xpath("//form[1]/input[@name='update']"));
+    }
+
+    public void deleteContact() {
+        click(By.xpath("//form[2]/input[@name='update']"));
+    }
+
+
 }
+
+
