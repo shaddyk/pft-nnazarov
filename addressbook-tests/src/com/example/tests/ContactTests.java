@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  */
 public class ContactTests extends TestBase {
 
-    @Test
+    //@Test
     public void testContactCreation() throws Exception {
         app.getNavigationHelper().openMainPage();
         app.getNavigationHelper().gotoContactsPage();
@@ -19,7 +19,7 @@ public class ContactTests extends TestBase {
         app.getNavigationHelper().returnToMainPage();
     }
 
-    @Test
+    //@Test
     public void testContactSendMail() throws Exception {
         app.getNavigationHelper().openMainPage();
         app.getContactHelper().selectContactsById(new int[]{5, 55});
@@ -27,7 +27,7 @@ public class ContactTests extends TestBase {
         //app.getContactHelper().sendEmail();
     }
 
-    @Test
+    //@Test
     public void testContactDetails() throws Exception {
         app.getNavigationHelper().openMainPage();
         app.getContactHelper().actionByLastName(0,"testname");
@@ -50,7 +50,7 @@ public class ContactTests extends TestBase {
         app.getContactHelper().deleteContact();
     }
 
-    @Test
+    //@Test
     public void moveToGroup() throws Exception {
         app.getNavigationHelper().openMainPage();
         app.getContactHelper().selectAllContacts();

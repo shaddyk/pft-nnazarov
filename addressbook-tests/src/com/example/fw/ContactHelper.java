@@ -44,12 +44,7 @@ public class ContactHelper extends HelperBase {
     }
 
     public void selectContactByLastName(String lastName) {
-        int contactCount = driver.findElements(By.xpath("//input[@type='checkbox']")).size() - 1;
-        for(int i = 0; i < contactCount; i++) {
-            if(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText().equals(lastName)) {
-                click(By.xpath("//tbody/tr[" + (i + 2) + "]/td[1]/input"));
-            }
-        }
+        click(By.xpath("//tr/td[2][contains(text(),'" + lastName + "')]/../td/input"));
     }
 
     public void actionByLastName(int action, String lastName) {
@@ -59,14 +54,7 @@ public class ContactHelper extends HelperBase {
         //2 - Vcard
         //3 - Gmaps
         //4 - Home
-
-        int contactCount = driver.findElements(By.xpath("//input[@type='checkbox']")).size() - 1;
-        for(int i = 0; i < contactCount; i++) {
-            if(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText().equals(lastName)) {
-                click(By.xpath("//tbody/tr[" + (i + 2) + "]/td["+ (action + 6) +"]/a/img"));
-                break;
-            }
-        }
+        click(By.xpath("//tr/td[2][contains(text(),'" + lastName + "')]/../td["+ (action + 6) +"]/a/img"));
     }
 
 
