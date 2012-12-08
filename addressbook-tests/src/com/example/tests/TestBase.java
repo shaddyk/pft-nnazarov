@@ -31,7 +31,8 @@ public class TestBase  {
     }
 
     public String generateRandomString() {
-        char[] alphabet = new char[]{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        char[] alphabet = new char[]{'a','b','c','d','e','f','g','h','i','j','k',
+                'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
         String string = "";
         Random rnd = new Random();
         int length = rnd.nextInt(10);
@@ -53,6 +54,22 @@ public class TestBase  {
             groupObject.setFooter(generateRandomString());
             groupObject.setHeader(generateRandomString());
             list.add(new Object[]{groupObject});
+        }
+
+        return list.iterator();
+    }
+
+    @DataProvider
+    public Iterator<Object[]> randomContactGenerator() {
+        List<Object[]> list = new ArrayList<Object[]>();
+
+        for(int i = 0; i < 3; i++) {
+            ContactObject contactObject = new ContactObject();
+            contactObject.setFirstname(generateRandomString());
+            contactObject.setLastname(generateRandomString());
+            contactObject.setPhone(generateRandomString());
+
+            list.add(new Object[]{contactObject});
         }
 
         return list.iterator();

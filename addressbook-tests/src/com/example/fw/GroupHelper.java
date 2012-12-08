@@ -53,7 +53,7 @@ public class GroupHelper extends HelperBase{
         List<GroupObject> groups = new ArrayList<GroupObject>();
         List<WebElement> checkboxes = driver.findElements(By.xpath("//input[@type='checkbox']"));
         for (WebElement checkbox : checkboxes) {
-            GroupObject group  = new GroupObject();
+            GroupObject group = new GroupObject();
             group.setName(checkbox.getAttribute("title").replaceAll("Select \\((.*)\\)","$1"));
             groups.add(group);
         }

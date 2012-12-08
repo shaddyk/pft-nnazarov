@@ -10,7 +10,7 @@ public class GroupObject implements Comparable<GroupObject> {
 
     @Override
     public String toString() {
-        return name + " " + header + " " + footer;
+        return "Name: " + name + ", Header: " + header + ", Footer: " + footer;
     }
 
     @Override
@@ -28,6 +28,11 @@ public class GroupObject implements Comparable<GroupObject> {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(GroupObject o) {
+        return this.name.compareToIgnoreCase(o.name);
     }
 
     public String getName() {
@@ -54,8 +59,4 @@ public class GroupObject implements Comparable<GroupObject> {
         this.footer = footer;
     }
 
-    @Override
-    public int compareTo(GroupObject o) {
-        return this.name.toLowerCase().compareTo(o.name.toLowerCase());
-    }
 }
