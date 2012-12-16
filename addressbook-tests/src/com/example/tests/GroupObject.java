@@ -10,7 +10,7 @@ public class GroupObject implements Comparable<GroupObject> {
 
     @Override
     public String toString() {
-        return "Name: " + name + ", Header: " + header + ", Footer: " + footer;
+        return "GroupObject [Name: " + name + ", Header: " + header + ", Footer: " + footer +"]";
     }
 
     @Override
@@ -39,24 +39,26 @@ public class GroupObject implements Comparable<GroupObject> {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getHeader() {
         return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
     }
 
     public String getFooter() {
         return footer;
     }
 
-    public void setFooter(String footer) {
-        this.footer = footer;
+    public GroupObject withName(String name) {
+        this.name = name;
+        return this;
     }
 
+    public GroupObject withFooter(String footer) {
+        this.footer = footer;
+        return this;
+    }
+
+    public GroupObject withHeader(String header) {
+        this.header = header;
+        return this;
+    }
 }

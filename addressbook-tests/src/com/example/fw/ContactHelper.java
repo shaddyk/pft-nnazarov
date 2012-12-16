@@ -1,10 +1,11 @@
 package com.example.fw;
 
 import com.example.tests.ContactObject;
+import com.example.utils.ListOf;
+import com.example.utils.SortedListOf;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,15 +15,111 @@ import java.util.List;
  */
 public class ContactHelper extends HelperBase {
 
+    private SortedListOf<ContactObject> cachedContacts;
+
+    public static boolean CREATION = true;
+    public static boolean MODIFICATION = false;
+
     public ContactHelper(ApplicationManager manager) {
         super(manager);
     }
 
-    public void submitContact() {
-        click(By.name("submit"));
+    public SortedListOf<ContactObject> getContacts() {
+        if(cachedContacts == null) {
+            rebuildCache();
+        }
+        return cachedContacts;
     }
 
-    public void fillContact(ContactObject contactObject) {
+    private void rebuildCache() {
+        manager.navigateTo().mainPage();
+        cachedContacts= new SortedListOf<ContactObject>();
+        List<WebElement> checkboxes = driver.findElements(By.name("selected[]"));
+        for (int i = 0; i < checkboxes.size(); i++) {
+            //Переделал с доставанием ФИ из ячеек таблицы. Вроде бы в случае с группами нам ничто не мешало брать название из чекбокса
+            ContactObject contact = new ContactObject()
+                   .withLastname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText())
+                   .withFirstname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[3]")).getText())
+                   .withPhone(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[5]")).getText());
+            cachedContacts.add(contact);
+        }
+    }
+
+    public ContactHelper createContact (ContactObject contactObject) {
+        manager.navigateTo().addContactPage();
+        fillContact(contactObject, CREATION);
+        submitContact();
+        manager.navigateTo().mainPage();
+        rebuildCache();
+        return this;
+    }
+
+    public ContactHelper modifyContact (ContactObject contactObject, Integer toModify) {
+        manager.navigateTo().mainPage();
+        initContactModification(toModify);
+        fillContact(contactObject, MODIFICATION);
+        updateContact();
+        manager.navigateTo().mainPage();
+        rebuildCache();
+        return this;
+    }
+
+    public ContactHelper deleteContact (Integer toDelete) {
+        manager.navigateTo().mainPage();
+        initContactModification(toDelete);
+        deleteContact();
+        manager.navigateTo().mainPage();
+        rebuildCache();
+        return this;
+    }
+
+    public ContactHelper moveAllContactsToGroup (String groupName) {
+        manager.navigateTo().mainPage();
+        selectAllContacts();
+        changeGroup(groupName);
+        manager.navigateTo().mainPage();
+        filterByGroup(groupName);
+        rebuildCache();
+        return this;
+    }
+
+    public ListOf<ContactObject> getUnsortedContacts() {
+        manager.navigateTo().mainPage();
+        ListOf<ContactObject> unsortedContacts= new ListOf<ContactObject>();
+        List<WebElement> checkboxes = driver.findElements(By.name("selected[]"));
+        for (int i = 0; i < checkboxes.size(); i++) {
+            ContactObject contact = new ContactObject()
+                    .withLastname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText())
+                    .withFirstname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[3]")).getText())
+                    .withPhone(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[5]")).getText());
+            unsortedContacts.add(contact);
+        }
+        return unsortedContacts;
+    }
+
+    public ListOf<ContactObject> getPrintedContacts() {
+        ListOf<ContactObject> printedContacts= new ListOf<ContactObject>();
+        List<WebElement> contacts = driver.findElements(By.xpath("//td[@valign='top']"));
+
+        for (WebElement cont : contacts) {
+            ContactObject contact = new ContactObject()
+                    .withLastname(cont.getText().replaceAll("(.*?) (.*?):\nH: (.*?)\n.*\n.*\n.*\n.*","$2"))
+                    .withFirstname(cont.getText().replaceAll("(.*?) (.*?):\nH: (.*?)\n.*\n.*\n.*\n.*","$1"))
+                    .withPhone(cont.getText().replaceAll("(.*?) (.*?):\nH: (.*?)\n.*\n.*\n.*\n.*","$3"));
+            printedContacts.add(contact);
+        }
+
+        return printedContacts;
+    }
+    //-----------------------------------------------------------------------------------------------
+
+    public ContactHelper submitContact() {
+        click(By.name("submit"));
+        cachedContacts = null;
+        return this;
+    }
+
+    public ContactHelper fillContact(ContactObject contactObject, boolean formType) {
         type(By.name("firstname"), contactObject.getFirstname());
         type(By.name("lastname"), contactObject.getLastname());
         type(By.name("address"), contactObject.getAddress());
@@ -36,74 +133,77 @@ public class ContactHelper extends HelperBase {
         type(By.name("byear"), contactObject.getByear());
         type(By.name("address2"), contactObject.getSaddress());
         type(By.name("phone2"), contactObject.getSphone());
+        if(formType == CREATION){
+            select(By.name("new_group"), "[none]");
+        }
+        else {
+            if(driver.findElements(By.name("new_group")).size() != 0) {
+                throw new Error ("Group selector exists in contact modififcation form");
+            }
+        }
+        return this;
     }
 
-    public void selectContactsById(int[] contactIndexes) {
+    public ContactHelper selectContactsById(int[] contactIndexes) {
         int contactCount = driver.findElements(By.xpath("//input[@type='checkbox']")).size() - 1;
         for(int i = 0; i < contactIndexes.length; i++) {
             if(contactIndexes[i] < contactCount) {
                 click(By.xpath("//*[@id='id" + (contactIndexes[i] + 1) + "']"));
             }
         }
+        return this;
     }
 
-    public void modifyContactByIndex(int index) {
-        click(By.xpath("//tr[" + (index + 1) + "]/td[7]/a/img"));
+    public ContactHelper initContactModification(int index) {
+        click(By.xpath("//tr[" + (index + 2) + "]/td[7]/a/img"));
+        return this;
     }
 
-    public void selectContactByLastName(String lastName) {
+    public ContactHelper selectContactByLastName(String lastName) {
         click(By.xpath("//tr/td[2][contains(text(),'" + lastName + "')]/../td/input"));
+        return this;
     }
 
-    public void actionByLastName(int action, String lastName) {
-        // action map
-        //0 - Details
-        //1 - Edit
-        //2 - Vcard
-        //3 - Gmaps
-        //4 - Home
-        click(By.xpath("//tr/td[2][contains(text(),'" + lastName + "')]/../td["+ (action + 6) +"]/a/img"));
-    }
-
-
-    public void selectAllContacts() {
-        //Я видел комментарий про "а выбирается то только один контакт"
-        //На последнем чекбоксе висит функция выделения всех доступных контактов
+    public ContactHelper selectAllContacts() {
         click(By.xpath("//tbody/tr[last()]/td[1]/input"));
+        return this;
     }
 
-    public void sendEmail() {
+    public ContactHelper sendEmail() {
         click(By.xpath("//input[@value='Send e-Mail']"));
+        return this;
     }
 
-    public void changeGroup(String groupName) {
+    public ContactHelper changeGroup(String groupName) {
         select(By.name("to_group"),groupName);
         click(By.xpath("//input[@name='add']"));
+        cachedContacts = null;
+        return this;
     }
 
-    public void filterByGroup(String groupName) {
+    public ContactHelper filterByGroup(String groupName) {
         select(By.name("group"),groupName);
+        cachedContacts = null;
+        return this;
     }
 
-    public void updateContact() {
+    public ContactHelper updateContact() {
         click(By.xpath("//form[1]/input[@name='update']"));
+        cachedContacts = null;
+        return this;
     }
 
-    public void deleteContact() {
+    public ContactHelper deleteContact() {
         click(By.xpath("//form[2]/input[@name='update']"));
+        cachedContacts = null;
+        return this;
     }
 
-    public List<ContactObject> getContacts() {
-        List<ContactObject> contacts = new ArrayList<ContactObject>();
-        List<WebElement> checkboxes = driver.findElements(By.name("selected[]"));
-        for (WebElement checkbox : checkboxes) {
-            ContactObject contact = new ContactObject();
-            contact.setLastname(checkbox.getAttribute("title").replaceAll("Select \\((.*?)?\\s(.*?)?\\)","$2"));
-            contact.setFirstname(checkbox.getAttribute("title").replaceAll("Select \\((.*?)?\\s(.*?)?\\)","$1"));
-            contacts.add(contact);
-        }
-        return contacts;
+    public ContactHelper printPhones() {
+        click(By.xpath("//li[6]/a"));
+        return this;
     }
+
 }
 
 

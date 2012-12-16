@@ -1,12 +1,14 @@
 package com.example.tests;
 
+
+import com.example.utils.SortedListOf;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
-import static org.testng.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 /**
  * Created with IntelliJ IDEA.
  * Author: Nikita Nazarov
@@ -16,88 +18,48 @@ public class ContactTests extends TestBase {
 
     @Test(dataProvider = "randomContactGenerator")
     public void testContactCreation(ContactObject contactObject) throws Exception {
-        app.getNavigationHelper().openMainPage();
+        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
 
-        List<ContactObject> oldList = app.getContactHelper().getContacts();
+        app.getContactHelper().createContact(contactObject);
+        SortedListOf<ContactObject> newList = app.getContactHelper().getContacts();
 
-        app.getNavigationHelper().addNewContact();
-        app.getContactHelper().fillContact(contactObject);
-        app.getContactHelper().submitContact();
-        app.getNavigationHelper().returnToMainPage();
-
-        List<ContactObject> newList = app.getContactHelper().getContacts();
-        oldList.add(contactObject);
-        Collections.sort(oldList);
-        assertEquals(newList, oldList);
-    }
-
-    //@Test
-    public void testContactSendMail() throws Exception {
-        Random rnd = new Random();
-        app.getNavigationHelper().openMainPage();
-        app.getContactHelper().selectContactsById(new int[]{rnd.nextInt(5)+1, rnd.nextInt(55)+1});
-        app.getContactHelper().sendEmail();
+        assertThat(newList, equalTo(oldList.withAdded(contactObject)));
     }
 
     @Test(dataProvider = "randomContactGenerator")
-    public void testModifyContact(ContactObject contactObject) throws Exception {
+    public void testContactModification(ContactObject contactObject) throws Exception {
+        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
         Random rnd = new Random();
-        app.getNavigationHelper().openMainPage();
+        Integer toModify = rnd.nextInt(oldList.size()-1);
 
-        List<ContactObject> oldList = app.getContactHelper().getContacts();
-        Integer toModify = rnd.nextInt(oldList.size()-2);
+        app.getContactHelper().modifyContact(contactObject, toModify);
+        SortedListOf<ContactObject> newList = app.getContactHelper().getContacts();
 
-        app.getContactHelper().modifyContactByIndex(toModify+1);
-        app.getContactHelper().fillContact(contactObject);
-        app.getContactHelper().updateContact();
-        app.getNavigationHelper().returnToMainPage();
-
-        List<ContactObject> newList = app.getContactHelper().getContacts();
-        oldList.remove((int)toModify);
-        oldList.add(contactObject);
-
-        Collections.sort(oldList);
-        assertEquals(newList, oldList);
+        assertThat(newList, equalTo(oldList.without(toModify + 1).withAdded(contactObject)));
     }
 
     @Test
-    public void testDeleteContact() throws Exception {
+    public void testContactDelete() throws Exception {
+        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
         Random rnd = new Random();
-        app.getNavigationHelper().openMainPage();
+        Integer toDelete = rnd.nextInt(oldList.size()-2);
 
-        List<ContactObject> oldList = app.getContactHelper().getContacts();
-        Integer toModify = rnd.nextInt(oldList.size()-2);
+        app.getContactHelper().deleteContact(toDelete);
+        SortedListOf<ContactObject> newList = app.getContactHelper().getContacts();
 
-        app.getContactHelper().modifyContactByIndex(toModify + 1);
-        app.getContactHelper().deleteContact();
-        app.getNavigationHelper().returnToMainPage();
-
-        List<ContactObject> newList = app.getContactHelper().getContacts();
-        oldList.remove((int)toModify);
-        assertEquals(newList, oldList);
+        assertThat(newList, equalTo(oldList.without(toDelete + 1)));
     }
 
     @Test
-    public void moveToGroup() throws Exception {
-        app.getNavigationHelper().openMainPage();
-
-        app.getNavigationHelper().gotoGroupsPage();
-        app.getGroupHelper().initGroupCreation();
-        GroupObject groupObject = new GroupObject();
+    public void testContactMoveToGroup() throws Exception {
         String generatedName = generateRandomString();
-        groupObject.setName(generatedName);
-        app.getGroupHelper().fillGroupForm(groupObject);
-        app.getGroupHelper().submitGroup();
-        app.getNavigationHelper().openMainPage();
+        app.getGroupHelper().createGroup(new GroupObject().withName(generatedName));
+        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
 
-        List<ContactObject> oldList = app.getContactHelper().getContacts();
-        app.getContactHelper().selectAllContacts();
-        app.getContactHelper().changeGroup(generatedName);
-        app.getNavigationHelper().openMainPage();
-        app.getContactHelper().filterByGroup(generatedName);
+        app.getContactHelper().moveAllContactsToGroup(generatedName);
+        SortedListOf<ContactObject> newList = app.getContactHelper().getContacts();
 
-        List<ContactObject> newList = app.getContactHelper().getContacts();
-        assertEquals(newList,oldList);
+        assertThat(newList, equalTo(oldList));
     }
 
 }

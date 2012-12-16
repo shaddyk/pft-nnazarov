@@ -1,10 +1,10 @@
 package com.example.fw;
 
 import com.example.tests.GroupObject;
+import com.example.utils.SortedListOf;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,49 +14,105 @@ import java.util.List;
  */
 public class GroupHelper extends HelperBase{
 
+    private SortedListOf<GroupObject> cachedGroups;
+
     public GroupHelper(ApplicationManager manager) {
         super(manager);
     }
 
-    public void submitGroup() {
+    public SortedListOf<GroupObject> getGroups() {
+        if(cachedGroups == null) {
+            rebuildCache();
+        }
+        return cachedGroups;
+    }
+
+    private void rebuildCache() {
+        cachedGroups = new SortedListOf<GroupObject>();
+
+        manager.navigateTo().groupsPage();
+        List<WebElement> checkboxes = driver.findElements(By.xpath("//input[@type='checkbox']"));
+        for (WebElement checkbox : checkboxes) {
+            String name = checkbox.getAttribute("title").replaceAll("Select \\((.*)\\)","$1");
+            cachedGroups.add(new GroupObject().withName(name));
+        }
+    }
+
+    public GroupHelper createGroup(GroupObject groupObject) {
+        manager.navigateTo().groupsPage();
+        initGroupCreation();
+        fillGroupForm(groupObject);
+        submitGroup();
+        returnToGroupsPage();
+        rebuildCache();
+        return this;
+    }
+
+    public GroupHelper deleteGroup(Integer[] toDeleteIndex) {
+        manager.navigateTo().groupsPage();
+        if(toDeleteIndex != null) selectGroups(toDeleteIndex);
+        submitGroupRemoval();
+        returnToGroupsPage();
+        rebuildCache();
+        return this;
+    }
+
+    public GroupHelper modifyContact(GroupObject groupObject, Integer[] toModifyIndex) {
+        manager.navigateTo().groupsPage();
+        selectGroups(toModifyIndex);
+        editGroup();
+        fillGroupForm(groupObject);
+        submitGroup();
+        returnToGroupsPage();
+        rebuildCache();
+        return this;
+    }
+
+    //----------------------------------------------------------------------------
+
+    public GroupHelper submitGroup() {
         click(By.xpath("//form/input[@type='submit']"));
+        cachedGroups = null;
+        return this;
     }
 
-    public void initGroupCreation() {
+    public GroupHelper returnToGroupsPage() {
+        click(By.linkText("group page"));
+        return this;
+    }
+
+    public GroupHelper initGroupCreation() {
         click(By.name("new"));
+        return this;
     }
 
-    public void fillGroupForm(GroupObject groupObject) {
+    public GroupHelper fillGroupForm(GroupObject groupObject) {
         type(By.name("group_name"), groupObject.getName());
         type(By.name("group_header"), groupObject.getHeader());
         type(By.name("group_footer"), groupObject.getFooter());
+        return this;
     }
 
-    public void selectGroups(Integer[] groupsIndexes) {
+    public GroupHelper selectGroups(Integer[] groupsIndexes) {
         int groupCount = driver.findElements(By.xpath("//form[2]/input[@type='checkbox']")).size();
         for(int i = 0; i < groupsIndexes.length; i++) {
             if(groupsIndexes[i] <= groupCount) {
                click(By.xpath("//form[2]/input[@type='checkbox'][" + groupsIndexes[i] + "]"));
             }
         }
+        return this;
     }
 
-    public void deleteGroup() {
+    public GroupHelper submitGroupRemoval() {
         click(By.name("delete"));
+        cachedGroups = null;
+        return this;
     }
 
-    public void editGroup() {
+    public GroupHelper editGroup() {
         click(By.name("edit"));
+        cachedGroups = null;
+        return this;
     }
 
-    public List<GroupObject> getGroups() {
-        List<GroupObject> groups = new ArrayList<GroupObject>();
-        List<WebElement> checkboxes = driver.findElements(By.xpath("//input[@type='checkbox']"));
-        for (WebElement checkbox : checkboxes) {
-            GroupObject group = new GroupObject();
-            group.setName(checkbox.getAttribute("title").replaceAll("Select \\((.*)\\)","$1"));
-            groups.add(group);
-        }
-        return groups;
-    }
 }

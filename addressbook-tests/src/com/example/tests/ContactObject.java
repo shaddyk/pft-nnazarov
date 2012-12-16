@@ -27,7 +27,8 @@ public class ContactObject implements Comparable<ContactObject>{
 
     @Override
     public String toString() {
-        return "Lastname: " + lastname + ", Firstname: " + firstname;
+        return "ContactObject [Lastname: " + lastname +
+                ", Firstname: " + firstname + ", Mobile phone: " + phone +"]";
     }
 
     @Override
@@ -39,6 +40,7 @@ public class ContactObject implements Comparable<ContactObject>{
 
         if (firstname != null ? !firstname.equals(that.firstname) : that.firstname != null) return false;
         if (lastname != null ? !lastname.equals(that.lastname) : that.lastname != null) return false;
+        if (phone != null ? !phone.equals(that.phone) : that.phone != null) return false;
 
         return true;
     }
@@ -47,6 +49,7 @@ public class ContactObject implements Comparable<ContactObject>{
     public int hashCode() {
         int result = firstname != null ? firstname.hashCode() : 0;
         result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
+        result = 31 * result + (phone != null ? phone.hashCode() : 0);
         return result;
     }
 
@@ -54,104 +57,117 @@ public class ContactObject implements Comparable<ContactObject>{
         return firstname;
     }
 
-    public void setFirstname(String firstname) {
+    public ContactObject withFirstname(String firstname) {
         this.firstname = firstname;
+        return this;
     }
 
     public String getLastname() {
         return lastname;
     }
 
-    public void setLastname(String lastname) {
+    public ContactObject withLastname(String lastname) {
         this.lastname = lastname;
+        return this;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public ContactObject withAddress(String address) {
         this.address = address;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public ContactObject withPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public String getMphone() {
         return mphone;
     }
 
-    public void setMphone(String mphone) {
+    public ContactObject withMphone(String mphone) {
         this.mphone = mphone;
+        return this;
     }
 
     public String getWphone() {
         return wphone;
     }
 
-    public void setWphone(String wphone) {
+    public ContactObject withWphone(String wphone) {
         this.wphone = wphone;
+        return this;
     }
 
     public String getMail() {
         return mail;
     }
 
-    public void setMail(String mail) {
+    public ContactObject withMail(String mail) {
         this.mail = mail;
+        return this;
     }
 
     public String getSmail() {
         return smail;
     }
 
-    public void setSmail(String smail) {
+    public ContactObject withSmail(String smail) {
         this.smail = smail;
+        return this;
     }
 
     public String getBday() {
         return bday;
     }
 
-    public void setBday(String bday) {
+    public ContactObject withBday(String bday) {
         this.bday = bday;
+        return this;
     }
 
     public String getBmonth() {
         return bmonth;
     }
 
-    public void setBmonth(String bmonth) {
+    public ContactObject withBmonth(String bmonth) {
         this.bmonth = bmonth;
+        return this;
     }
 
     public String getByear() {
         return byear;
     }
 
-    public void setByear(String byear) {
+    public ContactObject withByear(String byear) {
         this.byear = byear;
+        return this;
     }
 
     public String getSaddress() {
         return saddress;
     }
 
-    public void setSaddress(String saddress) {
+    public ContactObject withSaddress(String saddress) {
         this.saddress = saddress;
+        return this;
     }
 
     public String getSphone() {
         return sphone;
     }
 
-    public void setSphone(String sphone) {
+    public ContactObject withSphone(String sphone) {
         this.sphone = sphone;
+        return this;
     }
 
 }

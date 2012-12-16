@@ -35,7 +35,7 @@ public class TestBase  {
                 'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
         String string = "";
         Random rnd = new Random();
-        int length = rnd.nextInt(10);
+        int length = rnd.nextInt(10) + 1;
 
         for(int i = 0; i < length; i++) {
             string = string + alphabet[rnd.nextInt(alphabet.length)];
@@ -49,10 +49,10 @@ public class TestBase  {
         List<Object[]> list = new ArrayList<Object[]>();
 
         for(int i = 0; i < 3; i++) {
-            GroupObject groupObject = new GroupObject();
-            groupObject.setName(generateRandomString());
-            groupObject.setFooter(generateRandomString());
-            groupObject.setHeader(generateRandomString());
+            GroupObject groupObject = new GroupObject()
+                    .withName(generateRandomString())
+                    .withFooter(generateRandomString())
+                    .withHeader(generateRandomString());
             list.add(new Object[]{groupObject});
         }
 
@@ -65,9 +65,9 @@ public class TestBase  {
 
         for(int i = 0; i < 3; i++) {
             ContactObject contactObject = new ContactObject();
-            contactObject.setFirstname(generateRandomString());
-            contactObject.setLastname(generateRandomString());
-            contactObject.setPhone(generateRandomString());
+            contactObject.withFirstname(generateRandomString());
+            contactObject.withLastname(generateRandomString());
+            contactObject.withPhone(generateRandomString());
 
             list.add(new Object[]{contactObject});
         }
