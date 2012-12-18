@@ -100,12 +100,23 @@ public class ContactHelper extends HelperBase {
     public ListOf<ContactObject> getPrintedContacts() {
         ListOf<ContactObject> printedContacts= new ListOf<ContactObject>();
         List<WebElement> contacts = driver.findElements(By.xpath("//td[@valign='top']"));
+        String[] splitted;
+        String phone = "";
 
         for (WebElement cont : contacts) {
+            splitted = cont.getText().split("\n");
+            //Присваиваем переменной phone значение телефона, который выше всех в таблице
+            for(int i = splitted.length - 1;i > 0; i--) {
+                if(splitted[i].matches("[H,M,W]: (.*)")) phone = splitted[i].replaceAll("[H,M,W]: (.*)","$1");
+            }
+
+            //Чистим от мусора
+            phone = phone.replaceAll("\\s+","");
+
             ContactObject contact = new ContactObject()
-                    .withLastname(cont.getText().replaceAll("(.*?) (.*?):\nH: (.*?)\n.*\n.*\n.*\n.*","$2"))
-                    .withFirstname(cont.getText().replaceAll("(.*?) (.*?):\nH: (.*?)\n.*\n.*\n.*\n.*","$1"))
-                    .withPhone(cont.getText().replaceAll("(.*?) (.*?):\nH: (.*?)\n.*\n.*\n.*\n.*","$3"));
+                    .withLastname(splitted[0].replaceAll("(.*?)\\s(.*?):","$2"))
+                    .withFirstname(splitted[0].replaceAll("(.*?)\\s(.*?):","$1"))
+                    .withPhone(phone);
             printedContacts.add(contact);
         }
 
