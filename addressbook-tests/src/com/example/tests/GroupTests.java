@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 
 public class GroupTests extends TestBase {
 
-    @Test(dataProvider = "randomValidGroupGenerator")
+    @Test(dataProvider = "groupsFromXml")
     public void testGroupCreationWithValidData(GroupObject groupObject) throws Exception {
         SortedListOf<GroupObject> oldList = app.getGroupHelper().getGroups();
 
@@ -20,6 +20,18 @@ public class GroupTests extends TestBase {
         SortedListOf<GroupObject> newList = app.getGroupHelper().getGroups();
 
         assertThat(newList, equalTo(oldList.withAdded(groupObject)));
+    }
+
+    @Test(dataProvider = "groupsFromCsv")
+    public void testEditSomeGroup(GroupObject groupObject) throws Exception {
+        Random rnd = new Random();
+        SortedListOf<GroupObject> oldList = app.getGroupHelper().getGroups();
+        Integer[] toModify = new Integer[]{rnd.nextInt(oldList.size()-2) + 1};
+
+        app.getGroupHelper().modifyContact(groupObject, toModify);
+        SortedListOf<GroupObject> newList = app.getGroupHelper().getGroups();
+
+        assertThat(newList, equalTo(oldList.without(toModify).withAdded(groupObject)));
     }
 
     @Test
@@ -31,18 +43,6 @@ public class GroupTests extends TestBase {
         SortedListOf<GroupObject> newList = app.getGroupHelper().getGroups();
 
         assertThat(newList, equalTo(oldList));
-    }
-
-    @Test(dataProvider = "randomValidGroupGenerator")
-    public void testEditSomeGroup(GroupObject groupObject) throws Exception {
-        Random rnd = new Random();
-        SortedListOf<GroupObject> oldList = app.getGroupHelper().getGroups();
-        Integer[] toModify = new Integer[]{rnd.nextInt(oldList.size()-2) + 1};
-
-        app.getGroupHelper().modifyContact(groupObject, toModify);
-        SortedListOf<GroupObject> newList = app.getGroupHelper().getGroups();
-
-        assertThat(newList, equalTo(oldList.without(toModify).withAdded(groupObject)));
     }
 
     @Test

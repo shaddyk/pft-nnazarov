@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Full suite" parallel="none">
+  <test verbose="1" name="addressbook-tests" annotations="JDK">
+    <classes>
+      <class name="com.example.tests.GroupTests"/>
+	  <class name="com.example.tests.ContactTests"/>
+	  <class name="com.example.tests.PrintTests"/>
+    </classes>
+  </test>
+</suite>

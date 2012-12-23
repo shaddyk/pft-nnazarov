@@ -17,9 +17,6 @@ public class ContactHelper extends HelperBase {
 
     private SortedListOf<ContactObject> cachedContacts;
 
-    public static boolean CREATION = true;
-    public static boolean MODIFICATION = false;
-
     public ContactHelper(ApplicationManager manager) {
         super(manager);
     }
@@ -34,20 +31,24 @@ public class ContactHelper extends HelperBase {
     private void rebuildCache() {
         manager.navigateTo().mainPage();
         cachedContacts= new SortedListOf<ContactObject>();
-        List<WebElement> checkboxes = driver.findElements(By.name("selected[]"));
-        for (int i = 0; i < checkboxes.size(); i++) {
-            //Переделал с доставанием ФИ из ячеек таблицы. Вроде бы в случае с группами нам ничто не мешало брать название из чекбокса
+
+        //Отказался от поиска чекбоксов, с рядами и впрямь лучше.
+        //Вынести общий код попытался - упираюсь в то, что тут используется SortedListOf, а в Unsorted - ListOf
+        //Если можно - хотелось бы увидеть пример как их привести друг к другу
+
+        List<WebElement> rows = driver.findElements(By.xpath("//tbody/tr[@name='entry']"));
+        for (WebElement row : rows) {
             ContactObject contact = new ContactObject()
-                   .withLastname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText())
-                   .withFirstname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[3]")).getText())
-                   .withPhone(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[5]")).getText());
+                    .withLastname(row.findElement(By.xpath(".//td[2]")).getText())
+                    .withFirstname(row.findElement(By.xpath(".//td[3]")).getText())
+                    .withPhone(row.findElement(By.xpath(".//td[5]")).getText());
             cachedContacts.add(contact);
         }
     }
 
     public ContactHelper createContact (ContactObject contactObject) {
         manager.navigateTo().addContactPage();
-        fillContact(contactObject, CREATION);
+        fillContact(contactObject);
         submitContact();
         manager.navigateTo().mainPage();
         rebuildCache();
@@ -57,7 +58,7 @@ public class ContactHelper extends HelperBase {
     public ContactHelper modifyContact (ContactObject contactObject, Integer toModify) {
         manager.navigateTo().mainPage();
         initContactModification(toModify);
-        fillContact(contactObject, MODIFICATION);
+        fillContact(contactObject);
         updateContact();
         manager.navigateTo().mainPage();
         rebuildCache();
@@ -86,12 +87,12 @@ public class ContactHelper extends HelperBase {
     public ListOf<ContactObject> getUnsortedContacts() {
         manager.navigateTo().mainPage();
         ListOf<ContactObject> unsortedContacts= new ListOf<ContactObject>();
-        List<WebElement> checkboxes = driver.findElements(By.name("selected[]"));
-        for (int i = 0; i < checkboxes.size(); i++) {
+        List<WebElement> rows = driver.findElements(By.xpath("//tbody/tr[@name='entry']"));
+        for (WebElement row : rows) {
             ContactObject contact = new ContactObject()
-                    .withLastname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[2]")).getText())
-                    .withFirstname(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[3]")).getText())
-                    .withPhone(driver.findElement(By.xpath("//tbody/tr[" + (i + 2) + "]/td[5]")).getText());
+                    .withLastname(row.findElement(By.xpath(".//td[2]")).getText())
+                    .withFirstname(row.findElement(By.xpath(".//td[3]")).getText())
+                    .withPhone(row.findElement(By.xpath(".//td[5]")).getText());
             unsortedContacts.add(contact);
         }
         return unsortedContacts;
@@ -130,7 +131,7 @@ public class ContactHelper extends HelperBase {
         return this;
     }
 
-    public ContactHelper fillContact(ContactObject contactObject, boolean formType) {
+    public ContactHelper fillContact(ContactObject contactObject) {
         type(By.name("firstname"), contactObject.getFirstname());
         type(By.name("lastname"), contactObject.getLastname());
         type(By.name("address"), contactObject.getAddress());
@@ -144,14 +145,6 @@ public class ContactHelper extends HelperBase {
         type(By.name("byear"), contactObject.getByear());
         type(By.name("address2"), contactObject.getSaddress());
         type(By.name("phone2"), contactObject.getSphone());
-        if(formType == CREATION){
-            select(By.name("new_group"), "[none]");
-        }
-        else {
-            if(driver.findElements(By.name("new_group")).size() != 0) {
-                throw new Error ("Group selector exists in contact modififcation form");
-            }
-        }
         return this;
     }
 

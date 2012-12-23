@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 import java.util.Random;
 
+import static com.example.tests.ContactObjectGenerator.generateRandomString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ContactTests extends TestBase {
 
-    @Test(dataProvider = "randomContactGenerator")
+    @Test(dataProvider = "contactsFromXml")
     public void testContactCreation(ContactObject contactObject) throws Exception {
         SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
 
@@ -26,7 +27,7 @@ public class ContactTests extends TestBase {
         assertThat(newList, equalTo(oldList.withAdded(contactObject)));
     }
 
-    @Test(dataProvider = "randomContactGenerator")
+    @Test(dataProvider = "contactsFromCsv")
     public void testContactModification(ContactObject contactObject) throws Exception {
         SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
         Random rnd = new Random();
