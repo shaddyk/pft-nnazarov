@@ -32,16 +32,12 @@ public class ContactHelper extends HelperBase {
         manager.navigateTo().mainPage();
         cachedContacts= new SortedListOf<ContactObject>();
 
-        //Отказался от поиска чекбоксов, с рядами и впрямь лучше.
-        //Вынести общий код попытался - упираюсь в то, что тут используется SortedListOf, а в Unsorted - ListOf
-        //Если можно - хотелось бы увидеть пример как их привести друг к другу
-
-        List<WebElement> rows = driver.findElements(By.xpath("//tbody/tr[@name='entry']"));
+        List<WebElement> rows = getRows();
         for (WebElement row : rows) {
             ContactObject contact = new ContactObject()
-                    .withLastname(row.findElement(By.xpath(".//td[2]")).getText())
-                    .withFirstname(row.findElement(By.xpath(".//td[3]")).getText())
-                    .withPhone(row.findElement(By.xpath(".//td[5]")).getText());
+                    .withLastname(getLastname(row))
+                    .withFirstname(getFirstname(row))
+                    .withPhone(getPhone(row));
             cachedContacts.add(contact);
         }
     }
@@ -87,12 +83,12 @@ public class ContactHelper extends HelperBase {
     public ListOf<ContactObject> getUnsortedContacts() {
         manager.navigateTo().mainPage();
         ListOf<ContactObject> unsortedContacts= new ListOf<ContactObject>();
-        List<WebElement> rows = driver.findElements(By.xpath("//tbody/tr[@name='entry']"));
+        List<WebElement> rows = getRows();
         for (WebElement row : rows) {
             ContactObject contact = new ContactObject()
-                    .withLastname(row.findElement(By.xpath(".//td[2]")).getText())
-                    .withFirstname(row.findElement(By.xpath(".//td[3]")).getText())
-                    .withPhone(row.findElement(By.xpath(".//td[5]")).getText());
+                    .withLastname(getLastname(row))
+                    .withFirstname(getFirstname(row))
+                    .withPhone(getPhone(row));
             unsortedContacts.add(contact);
         }
         return unsortedContacts;
@@ -206,6 +202,22 @@ public class ContactHelper extends HelperBase {
     public ContactHelper printPhones() {
         click(By.xpath("//li[6]/a"));
         return this;
+    }
+
+    private List<WebElement> getRows() {
+        return driver.findElements(By.xpath("//tbody/tr[@name='entry']"));
+    }
+
+    private String getFirstname(WebElement row) {
+        return row.findElement(By.xpath(".//td[3]")).getText();
+    }
+
+    private String getPhone(WebElement row) {
+        return row.findElement(By.xpath(".//td[5]")).getText();
+    }
+
+    private String getLastname(WebElement row) {
+        return row.findElement(By.xpath(".//td[2]")).getText();
     }
 
 }
