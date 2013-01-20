@@ -14,28 +14,24 @@ import java.util.List;
  */
 public class GroupHelper extends WebDriverHelperBase {
 
-    private SortedListOf<GroupObject> cachedGroups;
-
     public GroupHelper(ApplicationManager manager) {
         super(manager);
     }
 
-    public SortedListOf<GroupObject> getGroups() {
-        if(cachedGroups == null) {
-            rebuildCache();
-        }
-        return cachedGroups;
-    }
-
-    private void rebuildCache() {
-        cachedGroups = new SortedListOf<GroupObject>();
+    public SortedListOf<GroupObject> getGroupsFromUI() {
+        SortedListOf<GroupObject> groups = new SortedListOf<GroupObject>();
 
         manager.navigateTo().groupsPage();
         List<WebElement> checkboxes = driver.findElements(By.xpath("//input[@type='checkbox']"));
         for (WebElement checkbox : checkboxes) {
             String name = checkbox.getAttribute("title").replaceAll("Select \\((.*)\\)","$1");
-            cachedGroups.add(new GroupObject().withName(name));
+            groups.add(new GroupObject().withName(name));
         }
+        return groups;
+    }
+
+    private SortedListOf<GroupObject> getGroupsFromDB() {
+        return manager.getHibernateHelper().getGroups();
     }
 
     public GroupHelper createGroup(GroupObject groupObject) {
@@ -44,7 +40,7 @@ public class GroupHelper extends WebDriverHelperBase {
         fillGroupForm(groupObject);
         submitGroup();
         returnToGroupsPage();
-        rebuildCache();
+        manager.getModel().addGroup(groupObject);
         return this;
     }
 
@@ -53,7 +49,7 @@ public class GroupHelper extends WebDriverHelperBase {
         if(toDeleteIndex != null) selectGroups(toDeleteIndex);
         submitGroupRemoval();
         returnToGroupsPage();
-        rebuildCache();
+        manager.getModel().removeGroup(toDeleteIndex);
         return this;
     }
 
@@ -64,7 +60,7 @@ public class GroupHelper extends WebDriverHelperBase {
         fillGroupForm(groupObject);
         submitGroup();
         returnToGroupsPage();
-        rebuildCache();
+        manager.getModel().removeGroup(toModifyIndex).addGroup(groupObject);
         return this;
     }
 
@@ -72,7 +68,6 @@ public class GroupHelper extends WebDriverHelperBase {
 
     public GroupHelper submitGroup() {
         click(By.xpath("//form/input[@type='submit']"));
-        cachedGroups = null;
         return this;
     }
 
@@ -105,13 +100,11 @@ public class GroupHelper extends WebDriverHelperBase {
 
     public GroupHelper submitGroupRemoval() {
         click(By.name("delete"));
-        cachedGroups = null;
         return this;
     }
 
     public GroupHelper editGroup() {
         click(By.name("edit"));
-        cachedGroups = null;
         return this;
     }
 

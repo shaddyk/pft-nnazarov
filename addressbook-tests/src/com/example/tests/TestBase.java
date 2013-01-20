@@ -25,6 +25,8 @@ import static com.example.tests.GroupObjectGenerator.*;
 public class TestBase  {
 
     public static ApplicationManager app;
+    private int checkCounter;
+    private int checkFrequency;
 
     @BeforeTest
     public void setUp() throws Exception {
@@ -32,6 +34,8 @@ public class TestBase  {
         Properties properties = new Properties();
         properties.load(new FileReader(new File(configFile)));
         app = new ApplicationManager(properties);
+        checkCounter = 0;
+        checkFrequency = Integer.parseInt(properties.getProperty("check.frequency", "0"));
     }
 
     @AfterTest
@@ -42,6 +46,15 @@ public class TestBase  {
     @DataProvider
     public Iterator<Object[]> randomValidGroupGenerator() {
         return wrapGroupsForDataProvider(generateRandomGroups(3)).iterator();
+    }
+
+    protected boolean timeToCheck () {
+        checkCounter++;
+        if (checkCounter > checkFrequency) {
+            checkCounter = 0;
+            return true;
+        }
+        return false;
     }
 
     public static List<Object[]> wrapGroupsForDataProvider(List<GroupObject> groups) {

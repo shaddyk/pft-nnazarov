@@ -22,14 +22,26 @@ public class ApplicationManager {
     private ContactHelper contactHelper;
     private HibernateHelper hibernateHelper;
     private Properties properties;
+    private ApplicationModel model;
 
     public ApplicationManager(Properties properties) {
         this.properties = properties;
+        model = new ApplicationModel();
+        model.setContacts(getHibernateHelper().getContacts());
+        model.setGroups(getHibernateHelper().getGroups());
         baseUrl = properties.getProperty("baseUrl");
     }
 
     public void stop() {
         driver.quit();
+    }
+
+    public ApplicationModel getModel() {
+        return this.model;
+    }
+
+    public String getProperty(String key) {
+        return properties.getProperty(key);
     }
 
     public NavigationHelper navigateTo(){

@@ -15,30 +15,22 @@ import java.util.List;
  */
 public class ContactHelper extends WebDriverHelperBase {
 
-    private SortedListOf<ContactObject> cachedContacts;
-
     public ContactHelper(ApplicationManager manager) {
         super(manager);
     }
 
-    public SortedListOf<ContactObject> getContacts() {
-        if(cachedContacts == null) {
-            rebuildCache();
-        }
-        return cachedContacts;
-    }
-
-    private void rebuildCache() {
+    public SortedListOf<ContactObject> getContactsFromUI() {
         manager.navigateTo().mainPage();
-        cachedContacts= new SortedListOf<ContactObject>();
+        SortedListOf<ContactObject> contacts = new SortedListOf<ContactObject>();
         List<WebElement> rows = getRows();
         for (WebElement row : rows) {
             ContactObject contact = new ContactObject()
                 .withLastname(getLastname(row))
                 .withFirstname(getFirstname(row))
                 .withPhone(getPhone(row));
-            cachedContacts.add(contact);
+            contacts.add(contact);
         }
+        return contacts;
     }
 
     public ContactHelper createContact (ContactObject contactObject) {
@@ -46,7 +38,7 @@ public class ContactHelper extends WebDriverHelperBase {
         fillContact(contactObject);
         submitContact();
         manager.navigateTo().mainPage();
-        rebuildCache();
+        manager.getModel().addContact(contactObject);
         return this;
     }
 
@@ -56,7 +48,7 @@ public class ContactHelper extends WebDriverHelperBase {
         fillContact(contactObject);
         updateContact();
         manager.navigateTo().mainPage();
-        rebuildCache();
+        manager.getModel().removeContact(toModify).addContact(contactObject);
         return this;
     }
 
@@ -65,7 +57,7 @@ public class ContactHelper extends WebDriverHelperBase {
         initContactModification(toDelete);
         deleteContact();
         manager.navigateTo().mainPage();
-        rebuildCache();
+        manager.getModel().removeContact(toDelete);
         return this;
     }
 
@@ -75,7 +67,6 @@ public class ContactHelper extends WebDriverHelperBase {
         changeGroup(groupName);
         manager.navigateTo().mainPage();
         filterByGroup(groupName);
-        rebuildCache();
         return this;
     }
 
@@ -122,7 +113,6 @@ public class ContactHelper extends WebDriverHelperBase {
 
     public ContactHelper submitContact() {
         click(By.name("submit"));
-        cachedContacts = null;
         return this;
     }
 
@@ -176,25 +166,21 @@ public class ContactHelper extends WebDriverHelperBase {
     public ContactHelper changeGroup(String groupName) {
         select(By.name("to_group"),groupName);
         click(By.xpath("//input[@name='add']"));
-        cachedContacts = null;
         return this;
     }
 
     public ContactHelper filterByGroup(String groupName) {
         select(By.name("group"),groupName);
-        cachedContacts = null;
         return this;
     }
 
     public ContactHelper updateContact() {
         click(By.xpath("//form[1]/input[@name='update']"));
-        cachedContacts = null;
         return this;
     }
 
     public ContactHelper deleteContact() {
         click(By.xpath("//form[2]/input[@name='update']"));
-        cachedContacts = null;
         return this;
     }
 
