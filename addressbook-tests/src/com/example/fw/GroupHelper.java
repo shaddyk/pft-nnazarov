@@ -3,6 +3,9 @@ package com.example.fw;
 import com.example.tests.GroupObject;
 import com.example.utils.SortedListOf;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,8 +28,14 @@ public class GroupHelper extends WebDriverHelperBase {
     }
 
     private void rebuildCache() {
-        cachedGroups =
-                new SortedListOf<GroupObject>(manager.getHibernateHelper().getGroups());
+        cachedGroups = new SortedListOf<GroupObject>();
+
+        manager.navigateTo().groupsPage();
+        List<WebElement> checkboxes = driver.findElements(By.xpath("//input[@type='checkbox']"));
+        for (WebElement checkbox : checkboxes) {
+            String name = checkbox.getAttribute("title").replaceAll("Select \\((.*)\\)","$1");
+            cachedGroups.add(new GroupObject().withName(name));
+        }
     }
 
     public GroupHelper createGroup(GroupObject groupObject) {

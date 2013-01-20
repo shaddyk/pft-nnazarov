@@ -19,8 +19,7 @@ public class ContactTests extends TestBase {
 
     @Test(dataProvider = "contactsFromXml")
     public void testContactCreation(ContactObject contactObject) throws Exception {
-        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
-
+        SortedListOf<ContactObject> oldList = app.getHibernateHelper().getContacts();
         app.getContactHelper().createContact(contactObject);
         SortedListOf<ContactObject> newList = app.getContactHelper().getContacts();
 
@@ -29,7 +28,7 @@ public class ContactTests extends TestBase {
 
     @Test(dataProvider = "contactsFromCsv")
     public void testContactModification(ContactObject contactObject) throws Exception {
-        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
+        SortedListOf<ContactObject> oldList = app.getHibernateHelper().getContacts();
         Random rnd = new Random();
         Integer toModify = rnd.nextInt(oldList.size()-1);
 
@@ -41,7 +40,7 @@ public class ContactTests extends TestBase {
 
     @Test
     public void testContactDelete() throws Exception {
-        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
+        SortedListOf<ContactObject> oldList = app.getHibernateHelper().getContacts();
         Random rnd = new Random();
         Integer toDelete = rnd.nextInt(oldList.size()-2);
 
@@ -55,7 +54,7 @@ public class ContactTests extends TestBase {
     public void testContactMoveToGroup() throws Exception {
         String generatedName = generateRandomString();
         app.getGroupHelper().createGroup(new GroupObject().withName(generatedName));
-        SortedListOf<ContactObject> oldList = app.getContactHelper().getContacts();
+        SortedListOf<ContactObject> oldList = app.getHibernateHelper().getContacts();
 
         app.getContactHelper().moveAllContactsToGroup(generatedName);
         SortedListOf<ContactObject> newList = app.getContactHelper().getContacts();

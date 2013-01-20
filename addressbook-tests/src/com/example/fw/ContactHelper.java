@@ -29,8 +29,16 @@ public class ContactHelper extends WebDriverHelperBase {
     }
 
     private void rebuildCache() {
-        cachedContacts =
-                new SortedListOf<ContactObject>(manager.getHibernateHelper().getContacts());
+        manager.navigateTo().mainPage();
+        cachedContacts= new SortedListOf<ContactObject>();
+        List<WebElement> rows = getRows();
+        for (WebElement row : rows) {
+            ContactObject contact = new ContactObject()
+                .withLastname(getLastname(row))
+                .withFirstname(getFirstname(row))
+                .withPhone(getPhone(row));
+            cachedContacts.add(contact);
+        }
     }
 
     public ContactHelper createContact (ContactObject contactObject) {

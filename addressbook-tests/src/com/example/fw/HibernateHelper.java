@@ -14,7 +14,7 @@ public class HibernateHelper extends HelperBase {
 	  super(manager);
 	}
 
-	public List<GroupObject> getGroups() {
+	public SortedListOf<GroupObject> getGroups() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction trans = session.beginTransaction();
 		try {
@@ -25,7 +25,7 @@ public class HibernateHelper extends HelperBase {
 		}
 	}
 
-    public List<ContactObject> getContacts() {
+    public SortedListOf<ContactObject> getContacts() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction trans = session.beginTransaction();
         try {
