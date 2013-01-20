@@ -1,6 +1,7 @@
 package com.example.tests;
 
 public class GroupObject implements Comparable<GroupObject> {
+    private String id = "0";
     private String name = "new name";
     private String header = "new header";
     private String footer = "new footer";
@@ -47,6 +48,11 @@ public class GroupObject implements Comparable<GroupObject> {
         return footer;
     }
 
+    public String getId() {
+
+        return id;
+    }
+
     public GroupObject withName(String name) {
         this.name = name;
         return this;
@@ -60,5 +66,26 @@ public class GroupObject implements Comparable<GroupObject> {
     public GroupObject withHeader(String header) {
         this.header = header;
         return this;
+    }
+
+    public GroupObject withId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public void setFooter(String footer) {
+        this.footer = footer;
     }
 }

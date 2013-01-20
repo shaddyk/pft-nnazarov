@@ -13,7 +13,7 @@ import java.util.List;
  * Author: Nikita Nazarov
  * Date: 01.12.12
  */
-public class ContactHelper extends HelperBase {
+public class ContactHelper extends WebDriverHelperBase {
 
     private SortedListOf<ContactObject> cachedContacts;
 
@@ -29,17 +29,8 @@ public class ContactHelper extends HelperBase {
     }
 
     private void rebuildCache() {
-        manager.navigateTo().mainPage();
-        cachedContacts= new SortedListOf<ContactObject>();
-
-        List<WebElement> rows = getRows();
-        for (WebElement row : rows) {
-            ContactObject contact = new ContactObject()
-                    .withLastname(getLastname(row))
-                    .withFirstname(getFirstname(row))
-                    .withPhone(getPhone(row));
-            cachedContacts.add(contact);
-        }
+        cachedContacts =
+                new SortedListOf<ContactObject>(manager.getHibernateHelper().getContacts());
     }
 
     public ContactHelper createContact (ContactObject contactObject) {

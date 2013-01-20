@@ -7,7 +7,7 @@ import org.openqa.selenium.By;
  * Author: Nikita Nazarov
  * Date: 01.12.12
  */
-public class NavigationHelper extends HelperBase{
+public class NavigationHelper extends WebDriverHelperBase {
 
     public NavigationHelper(ApplicationManager manager) {
         super(manager);

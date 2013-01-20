@@ -2,6 +2,7 @@ package com.example.tests;
 
 public class ContactObject implements Comparable<ContactObject>{
     // default values
+    private String id = "0";
     private String firstname = "firstname";
     private String lastname = "lastname";
     private String address = "address";
@@ -51,6 +52,16 @@ public class ContactObject implements Comparable<ContactObject>{
         result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
         result = 31 * result + (phone != null ? phone.hashCode() : 0);
         return result;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public ContactObject withId(String id) {
+        this.sphone = id;
+        return this;
     }
 
     public String getFirstname() {
@@ -170,4 +181,59 @@ public class ContactObject implements Comparable<ContactObject>{
         return this;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setMphone(String mphone) {
+        this.mphone = mphone;
+    }
+
+    public void setWphone(String wphone) {
+        this.wphone = wphone;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public void setSmail(String smail) {
+        this.smail = smail;
+    }
+
+    public void setBday(String bday) {
+        this.bday = bday;
+    }
+
+    public void setBmonth(String bmonth) {
+        this.bmonth = bmonth;
+    }
+
+    public void setByear(String byear) {
+        this.byear = byear;
+    }
+
+    public void setSaddress(String saddress) {
+        this.saddress = saddress;
+    }
+
+    public void setSphone(String sphone) {
+        this.sphone = sphone;
+    }
 }
